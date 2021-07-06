@@ -329,6 +329,23 @@ namespace Entitas {
         }
 
         void onDestroyEntity(IEntity entity) {
+            
+            var components = entity.GetComponents();
+            if (components.Any(c => c is ISystemStateComponent))
+            {
+                var indices = entity.GetComponentIndices();
+                for (int i = 0; i < components.Length; i++)
+                {
+                    var component = components[i];
+                    if (!(component is ISystemStateComponent))
+                    {
+                        var index = indices[i];
+                        entity.RemoveComponent(index);
+                    }
+                }
+                return;
+            }
+            
             var tEntity = (TEntity)entity;
             var removed = _entities.Remove(tEntity);
             if (!removed) {
